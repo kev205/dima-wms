@@ -1,0 +1,44 @@
+services:
+  # db:
+  #   image: postgres:17
+  #   environment:
+  #     POSTGRES_DB: dima
+  #     POSTGRES_USER: dima
+  #     POSTGRES_PASSWORD: dima
+  #   volumes:
+  #     # - ./db:/docker-entrypoint-initdb.d
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5433:5432"
+  #   networks:
+  #     - dima_network
+  web:
+    build:
+      context: ./mssales
+      dockerfile: ./compose/local/Dockerfile
+    # command: /start
+    image: mssales
+    env_file:
+      - ./mssales/.env.local
+    networks:
+      - dima_network
+    # depends_on:
+    #   - db
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./mssales/compose/local/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - dima_network
+    depends_on:
+      - web
+
+networks:
+  dima_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+
