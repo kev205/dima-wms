@@ -10,6 +10,7 @@ A monorepo containing the Vue.js MSWebclient and a Django MSSales microservice.
 ## Prerequisites
 
 - [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) installed.
+- A database (postgres or mysql). You will have to edit the .env.local for cli test or .env.docker for docker run
 
 ## Running the Applications
 
