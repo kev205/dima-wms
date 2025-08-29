@@ -144,7 +144,7 @@ steps:
     entrypoint: "bash"
     args:
       [
-        "./cloudrun-update-urls.sh",
+        "./mssales/cloudrun-update-urls.sh",
         "${_SERVICE_NAME}-${BRANCH_NAME}",
         "$LOCATION",
         "${_SERVICE_CUSTOM_URLS}",
