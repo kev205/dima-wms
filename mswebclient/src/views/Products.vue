@@ -95,7 +95,7 @@
                   <div class="flex items-center space-x-4">
                     <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
                       <span class="text-white font-bold text-lg">{{ product.name.charAt(0) }}</span>
-                      <span class="text-white font-bold text-lg">{{ product.internal_reference.charAt(0) }}</span>
+                      <span class="text-white font-bold text-lg">{{ product.internal_reference }}</span>
                     </div>
                     <div>
                       <div class="text-sm font-bold text-gray-900 group-hover:text-purple-600 transition-colors duration-200">{{ product.name }}</div>
