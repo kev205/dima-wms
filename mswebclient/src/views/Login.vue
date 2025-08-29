@@ -112,8 +112,8 @@
             Demo Credentials
           </h4>
           <div class="text-sm text-blue-700 space-y-1 mb-4">
-            <p><span class="font-medium">Email:</span> demo@dima.com</p>
-            <p><span class="font-medium">Password:</span> demo123</p>
+            <p><span class="font-medium">Email:</span> admin@example.com</p>
+            <p><span class="font-medium">Password:</span> adminpass</p>
           </div>
           <button
             type="button"
@@ -155,8 +155,8 @@ const form = ref({
 })
 
 const fillDemoCredentials = () => {
-  form.value.email = 'demo@dima.com'
-  form.value.password = 'demo123'
+  form.value.email = 'admin@example.com'
+  form.value.password = 'adminpass'
 }
 
 const handleSubmit = async () => {

@@ -98,7 +98,7 @@ npm run dev
 
 3. **Access the application**:
    - Frontend: http://localhost:3000
-   - Default credentials: `demo@dima.com` / `demo123`
+   - Default credentials: `admin@example.com` / `adminpass`
 
 ### Build for Production
 

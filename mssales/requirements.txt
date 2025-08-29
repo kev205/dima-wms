@@ -9,12 +9,17 @@ django-environ==0.12.0
 django-filter==25.1
 django-jazzmin==3.0.1
 django-soft-delete==1.0.19
+django-storages==1.14.6
 djangorestframework==3.16.1
 djangorestframework_simplejwt==5.5.1
 drf-spectacular==0.28.0
 google-api-core==2.25.1
 google-auth==2.40.3
+google-cloud-core==2.4.3
 google-cloud-secret-manager==2.24.0
+google-cloud-storage==3.3.0
+google-crc32c==1.7.1
+google-resumable-media==2.7.2
 googleapis-common-protos==1.70.0
 grpc-google-iam-v1==0.14.2
 grpcio==1.74.0
