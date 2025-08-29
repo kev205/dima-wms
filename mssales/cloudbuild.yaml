@@ -5,10 +5,10 @@ steps:
       [
         "build",
         "-f",
-        "mssales/compose/gcp/Dockerfile",
+        "compose/gcp/Dockerfile",
         "-t",
         "${_IMAGE_NAME}:$SHORT_SHA",
-        ".",
+        "mssales",
       ]
     id: "build-image"
 
