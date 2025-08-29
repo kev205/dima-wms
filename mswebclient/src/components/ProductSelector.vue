@@ -122,7 +122,9 @@ const filteredProducts = computed(() => {
   
   return products.value.filter((product) =>
     product.name.toLowerCase().includes(query.value.toLowerCase()) ||
-    product.category.toLowerCase().includes(query.value.toLowerCase())
+    product.product_category.toLowerCase().includes(query.value.toLowerCase()) ||
+    product.product_type?.toLowerCase().includes(query.value.toLowerCase()) ||
+    product.internal_reference?.toLowerCase().includes(query.value.toLowerCase())
   )
 })
 

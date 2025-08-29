@@ -1,7 +1,9 @@
 export interface Product {
   id: string
   name: string
-  category: string
+  product_category: string
+  internal_reference: string
+  product_type: string
   sales_price: number
   cost: number
   quantity_on_hand: number

@@ -31,10 +31,10 @@
                   </div>
 
                   <div>
-                    <label for="category" class="label">Category *</label>
-                    <input id="category" v-model="form.category" type="text" required class="input-field"
-                      :class="{ 'border-red-300': errors.category }" />
-                    <p v-if="errors.category" class="mt-1 text-sm text-red-600">{{ errors.category }}</p>
+                    <label for="product_category" class="label">Category *</label>
+                    <input id="product_category" v-model="form.product_category" type="text" required class="input-field"
+                      :class="{ 'border-red-300': errors.product_category }" />
+                    <p v-if="errors.product_category" class="mt-1 text-sm text-red-600">{{ errors.product_category }}</p>
                   </div>
 
                   <div>
@@ -47,6 +47,20 @@
                         class="input-field pl-7" :class="{ 'border-red-300': errors.sales_price }" />
                     </div>
                     <p v-if="errors.sales_price" class="mt-1 text-sm text-red-600">{{ errors.sales_price }}</p>
+                  </div>
+
+                  <div>
+                    <label for="internal_reference" class="label">Internal Reference *</label>
+                    <input id="internal_reference" v-model="form.internal_reference" type="text" required class="input-field"
+                      :class="{ 'border-red-300': errors.internal_reference }" />
+                    <p v-if="errors.internal_reference" class="mt-1 text-sm text-red-600">{{ errors.internal_reference }}</p>
+                  </div>
+
+                  <div>
+                    <label for="product_type" class="label">Product Type *</label>
+                    <input id="product_type" v-model="form.product_type" type="text" required class="input-field"
+                      :class="{ 'border-red-300': errors.product_type }" />
+                    <p v-if="errors.product_type" class="mt-1 text-sm text-red-600">{{ errors.product_type }}</p>
                   </div>
 
                   <div>
@@ -129,7 +143,9 @@ const errors = ref<Record<string, string>>({})
 
 const form = ref({
   name: '',
-  category: '',
+  product_category: '',
+  internal_reference: '',
+  product_type: '',
   sales_price: 0,
   cost: 0,
   quantity_on_hand: 0,
@@ -141,7 +157,9 @@ const isEditing = computed(() => !!props.product)
 const resetForm = () => {
   form.value = {
     name: '',
-    category: '',
+    product_category: '',
+    internal_reference: '',
+    product_type: '',
     sales_price: 0,
     cost: 0,
     quantity_on_hand: 0,
@@ -153,7 +171,9 @@ const resetForm = () => {
 const populateForm = (product: Product) => {
   form.value = {
     name: product.name,
-    category: product.category,
+    product_category: product.product_category,
+    internal_reference: product.internal_reference,
+    product_type: product.product_type,
     sales_price: Number(product.sales_price),
     cost: product.cost,
     quantity_on_hand: product.quantity_on_hand,
@@ -170,8 +190,8 @@ const validateForm = () => {
     isValid = false
   }
 
-  if (!form.value.category.trim()) {
-    errors.value.category = 'Category is required'
+  if (!form.value.product_category.trim()) {
+    errors.value.product_category = 'Category is required'
     isValid = false
   }
 
