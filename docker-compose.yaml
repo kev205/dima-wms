@@ -12,28 +12,36 @@ services:
   #     - "5433:5432"
   #   networks:
   #     - dima_network
-  web:
+  mssales:
     build:
       context: ./mssales
       dockerfile: ./compose/local/Dockerfile
     # command: /start
     image: mssales
     env_file:
-      - ./mssales/.env.gcp
+      - ./mssales/.env.docker
     networks:
       - dima_network
-    # depends_on:
-    #   - db
-  nginx:
+  gateway:
     image: nginx:alpine
     ports:
       - "8080:80"
     volumes:
-      - ./mssales/compose/local/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./mssales/compose/local/nginx.conf:/etc/nginx/conf.d/default.conf
     networks:
       - dima_network
     depends_on:
-      - web
+      - mssales
+  mswebclient:
+    build:
+      context: ./mswebclient
+      args:
+        - ENV_STR=VITE_API_BASE_URL=http://localhost:8080/api # the backend `mssales` service url
+    ports:
+      - 3000:80    
+    image: mswebclient
+    networks:
+      - dima_network
 
 networks:
   dima_network:

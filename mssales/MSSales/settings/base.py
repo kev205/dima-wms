@@ -32,13 +32,12 @@ if env_file and os.path.isfile(env_file):
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-=p56i2j8iuu42ygl+k4b)df+t(d_+pci1*#_y6ezi^#&ep+!#$"
+DEBUG = env("DEBUG")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = env("SECRET_KEY")
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
+
 CORS_ALLOWED_ORIGINS = env.list("ALLOWED_ORIGINS", default=[])
 
 

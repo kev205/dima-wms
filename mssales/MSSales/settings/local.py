@@ -18,3 +18,6 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     },
 }
+
+
+USE_X_FORWARDED_PORT = env("USE_X_FORWARDED_PORT", default=False)

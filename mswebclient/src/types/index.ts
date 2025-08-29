@@ -2,10 +2,8 @@ export interface Product {
   id: string
   name: string
   category: string
-  price: number
   sales_price: number
   cost: number
-  on_hand: number
   quantity_on_hand: number
   reserved: number
   available: number
