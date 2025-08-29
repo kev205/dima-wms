@@ -1,37 +1,23 @@
 services:
-  # db:
-  #   image: postgres:17
-  #   environment:
-  #     POSTGRES_DB: dima
-  #     POSTGRES_USER: dima
-  #     POSTGRES_PASSWORD: dima
-  #   volumes:
-  #     # - ./db:/docker-entrypoint-initdb.d
-  #     - postgres_data:/var/lib/postgresql/data
-  #   ports:
-  #     - "5433:5432"
-  #   networks:
-  #     - dima_network
   mssales:
     build:
       context: ./mssales
       dockerfile: ./compose/local/Dockerfile
-    # command: /start
     image: mssales
     env_file:
       - ./mssales/.env.docker
     networks:
       - dima_network
-  gateway:
-    image: nginx:alpine
-    ports:
-      - "8080:80"
-    volumes:
-      - ./mssales/compose/local/nginx.conf:/etc/nginx/conf.d/default.conf
-    networks:
-      - dima_network
-    depends_on:
-      - mssales
+  # gateway:
+  #   image: nginx:alpine
+  #   ports:
+  #     - "8080:80"
+  #   volumes:
+  #     - ./mssales/compose/local/nginx.conf:/etc/nginx/conf.d/default.conf
+  #   networks:
+  #     - dima_network
+  #   depends_on:
+  #     - mssales
   mswebclient:
     build:
       context: ./mswebclient

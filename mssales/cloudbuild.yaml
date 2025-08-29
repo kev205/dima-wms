@@ -1,0 +1,176 @@
+steps:
+  # Step 1: Build the Docker image
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-f",
+        "compose/gcp/Dockerfile",
+        "-t",
+        "${_IMAGE_NAME}:$SHORT_SHA",
+        ".",
+      ]
+    id: "build-image"
+
+  # Step 2: Push the Docker image to Google Container Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "${_IMAGE_NAME}:$SHORT_SHA"]
+    id: "push-image"
+
+  # Step 5: Collect static files inside the built image
+  - id: "Collect Statics files"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: /bin/bash
+    args:
+      - "-c"
+      - |
+        gcloud run jobs describe ${_COLLECT_JOB_NAME} --region $LOCATION &>/dev/null
+        if [ $? -eq 0 ]; then
+          echo "Job ${_COLLECT_JOB_NAME} already exists. Updating it."
+          gcloud run jobs update ${_COLLECT_JOB_NAME} \
+            --region $LOCATION \
+            --image ${_IMAGE_NAME}:$SHORT_SHA \
+            --set-env-vars SECRET_SETTINGS_NAME=${_SECRET_SETTINGS_NAME},DJANGO_SETTINGS_MODULE=${_DJANGO_SETTINGS_MODULE},GOOGLE_CLOUD_PROJECT=$PROJECT_ID \
+            --service-account ${_SERVICE_ACCOUNT_NAME} \
+            --command python \
+            --args "manage.py","collectstatic","--noinput","-v",3
+        else
+          echo "Job ${_COLLECT_JOB_NAME} does not exist. Creating it."
+          gcloud run jobs create ${_COLLECT_JOB_NAME} \
+            --region $LOCATION \
+            --image ${_IMAGE_NAME}:$SHORT_SHA \
+            --set-env-vars SECRET_SETTINGS_NAME=${_SECRET_SETTINGS_NAME},DJANGO_SETTINGS_MODULE=${_DJANGO_SETTINGS_MODULE},GOOGLE_CLOUD_PROJECT=$PROJECT_ID \
+            --service-account ${_SERVICE_ACCOUNT_NAME} \
+            --command python \
+            --args "manage.py","collectstatic","--noinput","-v",3
+        fi
+        # Execute the job after ensuring it exists/is updated
+        gcloud run jobs execute ${_COLLECT_JOB_NAME} \
+          --region $LOCATION
+
+  # Step 3: Run Django migrations inside the built image
+  - id: "Migrate database"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: /bin/bash
+    args:
+      - "-c"
+      - |
+        # Check if the job already exists
+        gcloud run jobs describe ${_MIGRATION_JOB_NAME} --region $LOCATION &>/dev/null
+        if [ $? -eq 0 ]; then
+          echo "Job ${_MIGRATION_JOB_NAME} already exists. Updating it."
+          gcloud run jobs update ${_MIGRATION_JOB_NAME} \
+            --region $LOCATION \
+            --image ${_IMAGE_NAME}:$SHORT_SHA \
+            --set-cloudsql-instances ${_CLOUD_SQL_CONNECTION_NAME} \
+            --set-env-vars SECRET_SETTINGS_NAME=${_SECRET_SETTINGS_NAME},DJANGO_SETTINGS_MODULE=${_DJANGO_SETTINGS_MODULE},GOOGLE_CLOUD_PROJECT=$PROJECT_ID \
+            --service-account ${_SERVICE_ACCOUNT_NAME} \
+            --command python \
+            --args "manage.py","migrate"
+        else
+          echo "Job ${_MIGRATION_JOB_NAME} does not exist. Creating it."
+          gcloud run jobs create ${_MIGRATION_JOB_NAME} \
+            --region $LOCATION \
+            --image ${_IMAGE_NAME}:$SHORT_SHA \
+            --set-cloudsql-instances ${_CLOUD_SQL_CONNECTION_NAME} \
+            --set-env-vars SECRET_SETTINGS_NAME=${_SECRET_SETTINGS_NAME},DJANGO_SETTINGS_MODULE=${_DJANGO_SETTINGS_MODULE},GOOGLE_CLOUD_PROJECT=$PROJECT_ID \
+            --service-account ${_SERVICE_ACCOUNT_NAME} \
+            --command python \
+            --args "manage.py","migrate"
+        fi
+        # Execute the job after ensuring it exists/is updated
+        gcloud run jobs execute ${_MIGRATION_JOB_NAME} \
+          --region $LOCATION
+
+  # Step 4: Run Django superuser creation
+  - id: "Create superuser"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: /bin/bash
+    args:
+      - "-c"
+      - |
+        gcloud run jobs describe ${_SUPERUSER_JOB_NAME} --region $LOCATION &>/dev/null
+        if [ $? -eq 0 ]; then
+          echo "Job ${_SUPERUSER_JOB_NAME} already exists. Updating it."
+          gcloud run jobs update ${_SUPERUSER_JOB_NAME} \
+            --region $LOCATION \
+            --image ${_IMAGE_NAME}:$SHORT_SHA \
+            --set-cloudsql-instances ${_CLOUD_SQL_CONNECTION_NAME} \
+            --set-env-vars SECRET_SETTINGS_NAME=${_SECRET_SETTINGS_NAME},DJANGO_SUPERUSER_EMAIL=${_ADMIN_EMAIL},DJANGO_SETTINGS_MODULE=${_DJANGO_SETTINGS_MODULE},GOOGLE_CLOUD_PROJECT=$PROJECT_ID \
+            --set-secrets DJANGO_SUPERUSER_PASSWORD=${_ADMIN_PASSWORD_NAME}:latest \
+            --service-account ${_SERVICE_ACCOUNT_NAME} \
+            --command python \
+            --args "manage.py","createsuperuser","--username","admin","--noinput"
+        else
+          echo "Job ${_SUPERUSER_JOB_NAME} does not exist. Creating it."
+          gcloud run jobs create ${_SUPERUSER_JOB_NAME} \
+            --region $LOCATION \
+            --image ${_IMAGE_NAME}:$SHORT_SHA \
+            --set-cloudsql-instances ${_CLOUD_SQL_CONNECTION_NAME} \
+            --set-env-vars SECRET_SETTINGS_NAME=${_SECRET_SETTINGS_NAME},DJANGO_SUPERUSER_EMAIL=${_ADMIN_EMAIL},DJANGO_SETTINGS_MODULE=${_DJANGO_SETTINGS_MODULE},GOOGLE_CLOUD_PROJECT=$PROJECT_ID \
+            --set-secrets DJANGO_SUPERUSER_PASSWORD=${_ADMIN_PASSWORD_NAME}:latest \
+            --service-account ${_SERVICE_ACCOUNT_NAME} \
+            --command python \
+            --args "manage.py","createsuperuser","--username","admin","--noinput"
+        fi
+        # Execute the job after ensuring it exists/is updated
+        gcloud run jobs execute ${_SUPERUSER_JOB_NAME} \
+          --region $LOCATION
+
+  # Step 5: Deploy to Cloud Run service
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: /bin/bash
+    args:
+      - "-c"
+      - |
+        gcloud run deploy ${_SERVICE_NAME}-${BRANCH_NAME} \
+          --image ${_IMAGE_NAME}:$SHORT_SHA \
+          --region $LOCATION \
+          --set-env-vars SECRET_SETTINGS_NAME=${_SECRET_SETTINGS_NAME},DJANGO_SETTINGS_MODULE=${_DJANGO_SETTINGS_MODULE},GOOGLE_CLOUD_PROJECT=$PROJECT_ID \
+          --service-account ${_SERVICE_ACCOUNT_NAME} \
+          --allow-unauthenticated \
+          --add-cloudsql-instances ${_CLOUD_SQL_CONNECTION_NAME} \
+          --port=${_PORT} \
+          --min-instances 0 \
+          --max-instances 1
+    id: "deploy"
+    waitFor:
+      - "push-image"
+      - "Migrate database"
+
+  # Step 6: Update Cloud Run service URL
+  - id: "mssales-update-url"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
+    args:
+      [
+        "./cloudrun-update-urls.sh",
+        "${_SERVICE_NAME}-${BRANCH_NAME}",
+        "$LOCATION",
+        "${_SERVICE_CUSTOM_URLS}",
+        "${_ADDITIONAL_SERVICE_CUSTOM_URLS}",
+      ]
+    waitFor:
+      - "deploy"
+
+logs_bucket: "gs://afrikpay-sandbox-sidd_cloudbuild"
+
+options:
+  dynamicSubstitutions: true
+  substitutionOption: "ALLOW_LOOSE"
+
+substitutions:
+  _DB_INSTANCE_NAME: cloud-sql-db-sidd
+  # _SERVICE_NAME: mssales
+  # _REPO_NAME: bddddddbtest
+  # _SERVICE_ACCOUNT_NAME: your-service-account@iam.gserviceaccount.com cloudbuild-sa@afrikpay-sandbox-sidd.iam.gserviceaccount.com
+  _IMAGE_NAME: ${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${BRANCH_NAME}_${_SERVICE_NAME}
+  _CLOUD_SQL_CONNECTION_NAME: ${PROJECT_ID}:${LOCATION}:${_DB_INSTANCE_NAME}
+  # _SECRET_SETTINGS_NAME: mssales_settings
+  _DJANGO_SETTINGS_MODULE: MSSales.settings.gcp
+  # _ADMIN_PASSWORD_NAME: admin_password_secret_name
+  _ADMIN_EMAIL: admin@example.com
+  _MIGRATION_JOB_NAME: mssales-migrate-job
+  _SUPERUSER_JOB_NAME: mssales-superuser-job
+  _COLLECT_JOB_NAME: mssales-collect-static-job
+  _PORT: "80"
