@@ -98,7 +98,7 @@
                     </div>
                     <div>
                       <div class="text-sm font-bold text-gray-900 group-hover:text-purple-600 transition-colors duration-200">{{ product.name }}</div>
-                      <div class="inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium text-gray-700 mt-1">
+                      <div class="items-center px-2 py-1 rounded-lg text-xs font-medium text-gray-700 mt-1">
                         {{ product.internal_reference }}
                       </div>
                       <div class="inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 text-gray-700 mt-1">
