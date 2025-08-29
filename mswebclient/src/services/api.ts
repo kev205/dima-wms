@@ -96,7 +96,10 @@ export const authApi = {
 
   logout: () => api.post('/logout/'),
 
-  verify: () => api.get('/token/refresh/')
+  verify: (refresh: string) =>
+    api.post<{ access: string }>('/token/refresh/', {
+      refresh
+    })
 }
 
 export default api
