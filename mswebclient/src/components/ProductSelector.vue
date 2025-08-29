@@ -55,12 +55,12 @@
                   <span
                     :class="[
                       'px-2 py-1 rounded-full text-xs font-medium',
-                      product.quantity_on_hand > 0
+                      product.availables > 0
                         ? (active ? 'bg-green-200 text-green-800' : 'bg-green-100 text-green-800')
                         : (active ? 'bg-red-200 text-red-800' : 'bg-red-100 text-red-800')
                     ]"
                   >
-                    {{ product.quantity_on_hand }} available
+                    {{ product.availables }} available
                   </span>
                 </div>
               </div>

@@ -7,8 +7,9 @@ export interface Product {
   sales_price: number
   cost: number
   quantity_on_hand: number
+  availables: number
   reserved: number
-  available: number
+  available: boolean
   description?: string
   created_at: string
   updated_at: string

@@ -205,10 +205,10 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_404_NOT_FOUND,
                         )
 
-                    if stock.quantity_on_hand < quantity:
+                    if stock.availables < quantity:
                         return Response(
                             {
-                                "error": f"Insufficient stock for product {product_id}, available: {stock.quantity}, requested: {quantity}"
+                                "error": f"Insufficient stock for product {product_id}, available: {stock.availables}, requested: {quantity}"
                             },
                             status=status.HTTP_400_BAD_REQUEST,
                         )
@@ -217,7 +217,7 @@ class SalesOrderViewSet(viewsets.ModelViewSet):
                 reservations = []
                 for line in order_lines:
                     stock = items_dict[line.product.id]
-                    stock.quantity_on_hand -= line.qty
+                    stock.availables -= line.qty
                     stock.save()
                     reservation = Reservation(
                         order=sale_order, product=line.product, qty=line.qty

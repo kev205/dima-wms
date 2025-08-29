@@ -64,9 +64,9 @@
                     <label class="label text-xs">Quantity *</label>
                     <input v-model.number="line.qty" @input="calculateLineTotal(index)" type="number" min="1" required
                       class="input-field text-sm" />
-                    <p v-if="line.product && line.qty > line.product.quantity_on_hand"
+                    <p v-if="line.product && line.qty > line.product.availables"
                       class="mt-1 text-xs text-yellow-600">
-                      Only {{ line.product.quantity_on_hand }} available
+                      Only {{ line.product.availables }} available
                     </p>
                   </div>
 
@@ -266,10 +266,10 @@ const validateForm = () => {
       isValid = false
     }
 
-    if (line.product && line.qty > line.product.quantity_on_hand) {
+    if (line.product && line.qty > line.product.availables) {
       notificationStore.warning(
         'Insufficient Stock',
-        `${line.product.name} has only ${line.product.quantity_on_hand} units available`
+        `${line.product.name} has only ${line.product.availables} units available`
       )
       isValid = false
     }

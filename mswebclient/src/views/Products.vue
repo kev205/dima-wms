@@ -114,7 +114,7 @@
                 <td class="px-6 py-6 whitespace-nowrap">
                   <div class="flex items-center space-x-2">
                     <div>
-                      <div class="text-sm font-semibold text-gray-900">Available</div>
+                      <div class="text-sm font-semibold text-gray-900">{{ product.availables }} Available</div>
                       <div class="text-xs text-gray-500">{{ product.quantity_on_hand }} on hand, {{ product.reserved }} reserved</div>
                     </div>
                   </div>
@@ -122,13 +122,13 @@
                 <td class="px-6 py-6 whitespace-nowrap">
                   <span :class="[
                     'badge',
-                    product.quantity_on_hand > 10 
+                    product.availables > 10 
                       ? 'badge-success' 
-                      : product.quantity_on_hand > 0 
+                      : product.availables > 0 
                         ? 'badge-warning'
                         : 'badge-error'
                   ]">
-                    {{ product.quantity_on_hand > 10 ? 'In Stock' : product.available  ? 'Low Stock' : 'Out of Stock' }}
+                    {{ product.availables > 10 ? 'In Stock' : product.available  ? 'Low Stock' : 'Out of Stock' }}
                   </span>
                 </td>
                 <td class="px-6 py-6 whitespace-nowrap text-right">

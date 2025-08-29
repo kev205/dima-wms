@@ -40,8 +40,12 @@ export const productApi = {
 
   getById: (id: string) => api.get<ApiResponse<Product>>(`/products/${id}/`),
 
-  create: (data: Omit<Product, 'id' | 'created_at' | 'updated_at' | 'available' | 'reserved'>) =>
-    api.post<ApiResponse<Product>>('/products/', data),
+  create: (
+    data: Omit<
+      Product,
+      'id' | 'created_at' | 'updated_at' | 'available' | 'availables' | 'reserved'
+    >
+  ) => api.post<ApiResponse<Product>>('/products/', data),
 
   update: (id: string, data: Partial<Product>) =>
     api.put<ApiResponse<Product>>(`/products/${id}/`, data),

@@ -17,6 +17,7 @@ class Product(TimeStampedModel):
     product_category = models.CharField(max_length=255, null=True)
     product_type = models.CharField(max_length=64, null=True)
     quantity_on_hand = models.IntegerField(default=10)
+    availables = models.IntegerField(default=10)
     forecasted_quantity = models.IntegerField(default=0)
     activity_exception_decoration = models.CharField(
         max_length=255, blank=True, null=True
@@ -25,6 +26,11 @@ class Product(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.availables = self.quantity_on_hand
+        super().save(*args, **kwargs)
 
 
 class Order(TimeStampedModel):

@@ -250,7 +250,7 @@
                 <div class="text-right">
                   <div class="flex items-center space-x-2">
                     <div class="w-8 h-8 bg-gradient-to-r from-amber-100 to-amber-200 rounded-lg flex items-center justify-center">
-                      <span class="text-sm font-bold text-amber-800">{{ product.quantity_on_hand }}</span>
+                      <span class="text-sm font-bold text-amber-800">{{ product.availables }}</span>
                     </div>
                   </div>
                   <p class="text-xs text-amber-600 font-medium mt-1">Low Stock</p>
@@ -309,7 +309,7 @@ const loadDashboardData = async () => {
     stats.value.totalProducts = productsResponse.data.count
     
     // Find low stock products (less than 10 available)
-    lowStockProducts.value = products.filter(product => product.quantity_on_hand < 10 && product.available)
+    lowStockProducts.value = products.filter(product => product.availables < 10 && product.available)
 
     // Load customer count
     const customersResponse = await customerApi.getAll()
