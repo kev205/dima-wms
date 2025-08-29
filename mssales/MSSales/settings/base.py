@@ -11,8 +11,12 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from datetime import timedelta
+import io
 import os
 from pathlib import Path
+
+import google.auth
+from google.cloud import secretmanager
 
 import environ
 
@@ -26,8 +30,25 @@ env_file = None
 if os.getenv("ENV_NAME", None):
     env_file = os.path.join(BASE_DIR, f".env.{os.getenv('ENV_NAME')}")
 
+# Attempt to load the Project ID into the environment, safely failing on error.
+try:
+    _l, os.environ["GOOGLE_CLOUD_PROJECT"] = google.auth.default()
+except google.auth.exceptions.DefaultCredentialsError:
+    pass
+
 if env_file and os.path.isfile(env_file):
     env.read_env(env_file)
+elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
+    # Pull secrets from Secret Manager
+    GS_PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT")
+
+    client = secretmanager.SecretManagerServiceClient()
+    settings_name = os.environ.get("SECRET_SETTINGS_NAME", "mssales_settings")
+    secret_name = f"projects/{GS_PROJECT_ID}/secrets/{settings_name}/versions/latest"
+    payload = client.access_secret_version(name=secret_name).payload.data.decode(
+        "UTF-8"
+    )
+    env.read_env(io.StringIO(payload))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -36,10 +57,12 @@ DEBUG = env("DEBUG")
 
 SECRET_KEY = env("SECRET_KEY")
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
-
 CORS_ALLOWED_ORIGINS = env.list("ALLOWED_ORIGINS", default=[])
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
+CSRF_COOKIE_SECURE = False  # Set to True if using HTTPS
+SESSION_COOKIE_SECURE = False  # Set to True if using HTTPS
 
 # Application definition
 
@@ -109,6 +132,23 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Database
+# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env("DB_NAME", default="mssales"),
+        "USER": env("DB_USER", default="dima"),
+        "PASSWORD": env("DB_PASSWORD", default="dima"),
+        "HOST": env("DB_HOST", default="db"),
+        "PORT": env("DB_PORT", default="5432"),
+    },
+    "sqlite": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    },
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/

@@ -11,6 +11,8 @@ if [ -n "$4" ]; then
     ENV_VARS="$ENV_VARS,$4"
 fi
 
+ENV_VARS="$ENV_VARS##ALLOWED_HOSTS=$3,$4"
+
 # Update service with env vars
 gcloud run services update "$1" \
     --region "$2" \
