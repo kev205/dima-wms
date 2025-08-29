@@ -16,7 +16,9 @@ A monorepo containing the Vue.js MSWebclient and a Django MSSales microservice.
 
 1. **Clone the repository** and navigate to the project root.
 
-2. **Start all services** using Docker Compose:
+2. **Edit Configs** Change .env.local (or .env.docker) to fit your configuration
+
+3. **Start all services** using Docker Compose:
 
     ```bash
     docker-compose up --build
