@@ -8,7 +8,7 @@ steps:
         "mssales/compose/gcp/Dockerfile",
         "-t",
         "${_IMAGE_NAME}:$SHORT_SHA",
-        "mssales",
+        "./mssales",
       ]
     id: "build-image"
 
