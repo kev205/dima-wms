@@ -1,30 +1,30 @@
 from django.db import models
 
-from django_softdelete.models import SoftDeleteModel
-
+from core.models import TimeStampedModel
 from suppliers.models import Vendor
 
 # Create your models here.
 
 
-class Product(SoftDeleteModel):
-    favorite = models.CharField(max_length=32)
+class Product(TimeStampedModel):
+    favorite = models.CharField(max_length=32, null=True, db_index=True)
     name = models.CharField(max_length=255)
     internal_reference = models.CharField(max_length=64, blank=True, null=True)
     responsible = models.CharField(max_length=255, blank=True, null=True)
     barcode = models.CharField(max_length=64, blank=True, null=True)
     sales_price = models.DecimalField(max_digits=10, decimal_places=2)
     cost = models.DecimalField(max_digits=10, decimal_places=2)
-    product_category = models.CharField(max_length=255)
-    product_type = models.CharField(max_length=64)
-    quantity_on_hand = models.IntegerField()
-    forecasted_quantity = models.IntegerField()
+    product_category = models.CharField(max_length=255, null=True)
+    product_type = models.CharField(max_length=64, null=True)
+    quantity_on_hand = models.IntegerField(default=10)
+    forecasted_quantity = models.IntegerField(default=0)
     activity_exception_decoration = models.CharField(
         max_length=255, blank=True, null=True
     )
+    available = models.BooleanField(default=True)
 
 
-class Order(SoftDeleteModel):
+class Order(TimeStampedModel):
     PRIORITY_CHOICES = [
         ("Normal", "Normal"),
     ]
@@ -50,10 +50,8 @@ class Order(SoftDeleteModel):
         return self.order_reference
 
 
-class OrderLine(SoftDeleteModel):
-    order = models.ForeignKey(
-        Order, related_name="order_lines", on_delete=models.CASCADE
-    )
+class OrderLine(TimeStampedModel):
+    order = models.ForeignKey(Order, related_name="lines", on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     price_unit = models.DecimalField(max_digits=10, decimal_places=2)

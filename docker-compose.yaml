@@ -19,7 +19,7 @@ services:
     # command: /start
     image: mssales
     env_file:
-      - ./mssales/.env.local
+      - ./mssales/.env.gcp
     networks:
       - dima_network
     # depends_on:
