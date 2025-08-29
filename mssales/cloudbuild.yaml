@@ -100,7 +100,7 @@ steps:
             --set-secrets DJANGO_SUPERUSER_PASSWORD=${_ADMIN_PASSWORD_NAME}:latest \
             --service-account ${_SERVICE_ACCOUNT_NAME} \
             --command python \
-            --args "manage.py","createsuperuser","--username","admin","--noinput"
+            --args "manage.py","createsuperuser","--username",${_ADMIN_EMAIL},"--noinput"
         else
           echo "Job ${_SUPERUSER_JOB_NAME} does not exist. Creating it."
           gcloud run jobs create ${_SUPERUSER_JOB_NAME} \
@@ -111,7 +111,7 @@ steps:
             --set-secrets DJANGO_SUPERUSER_PASSWORD=${_ADMIN_PASSWORD_NAME}:latest \
             --service-account ${_SERVICE_ACCOUNT_NAME} \
             --command python \
-            --args "manage.py","createsuperuser","--username","admin","--noinput"
+            --args "manage.py","createsuperuser","--username",${_ADMIN_EMAIL},"--noinput"
         fi
         # Execute the job after ensuring it exists/is updated
         gcloud run jobs execute ${_SUPERUSER_JOB_NAME} \
