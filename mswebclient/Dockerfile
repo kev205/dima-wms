@@ -44,8 +44,6 @@ COPY --from=build-stage /app/dist /usr/share/nginx/html
 # # Switch to non-root user
 # USER viteuser
 
-RUN ls -a
-
 # Expose port
 EXPOSE 80
 
