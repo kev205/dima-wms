@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "drf_spectacular",
     "django_filters",
+    "core",
     "telesales",
     "products",
     "suppliers",
@@ -202,28 +203,28 @@ SPECTACULAR_SETTINGS = {
 
 JAZZMIN_SETTINGS = {
     # title of the window (Will default to current_admin_site.site_title if absent or None)
-    "site_title": env("SITE_TITLE", default="EEC"),
+    "site_title": env("SITE_TITLE", default="DIMA WSM"),
     # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_header": env("SITE_HEADER", default="Login in EEC"),
+    "site_header": env("SITE_HEADER", default="Login in DIMA WSM"),
     # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_brand": env("SITE_BRAND", default="EEC"),
+    "site_brand": env("SITE_BRAND", default="DIMA WSM"),
     # Logo to use for your site, must be present in static files, used for brand on top left
-    "site_logo": "assets/icon.png",
+    "site_logo": None,
     # Logo to use for your site, must be present in static files, used for login form logo (defaults to site_logo)
-    "login_logo": "assets/icon.png",
+    "login_logo": None,
     # CSS classes that are applied to the logo above
     "site_logo_classes": "img-circle",
     # Relative path to a favicon for your site, will default to site_logo if absent (ideally 32x32 px)
     "site_icon": None,
     # Welcome text on the login screen
     "welcome_sign": env(
-        "WELCOME_SIGN", default="Bienvenue sur l'administration du site de EEC"
+        "WELCOME_SIGN", default="Bienvenue sur l'administration de DIMA WSM"
     ),
     # Copyright on the footer
-    "copyright": "Afrikpay",
+    "copyright": "Ukev",
     # List of model admins to search from the search bar, search bar omitted if excluded
     # If you want to use a single search field you dont need to use a list, you can use a simple string
-    "search_model": ["core.CustomUser", "ecommerce.Article"],
+    "search_model": ["telesales.Product", "telesales.Customer"],
     # Field name on user model that contains avatar ImageField/URLField/Charfield or a callable that receives the user
     "user_avatar": None,
     ############
@@ -232,16 +233,14 @@ JAZZMIN_SETTINGS = {
     # Links to put along the top menu
     "topmenu_links": [
         {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
-        {"app": "contents"},
-        {"app": "ecommerce"},
+        {"app": "telesales"},
+        {"app": "products"},
     ],
     #############
     # User Menu #
     #############
     # Additional links to include in the user menu on the top right ("app" url type is not allowed)
-    "usermenu_links": [
-        {"model": "core.customuser"},
-    ],
+    "usermenu_links": [],
     #############
     # Side Menu #
     #############
@@ -263,20 +262,8 @@ JAZZMIN_SETTINGS = {
         "auth": "fas fa-users-cog",
         "auth.Group": "fas fa-users",
         "admin.LogEntry": "fas fa-file",
-        "core.customuser": "fas fa-user",
-        "core.Event": "fas fa-calendar",
-        "ecommerce.Article": "fa-solid fa-store",
-        "ecommerce.MerchantProfile": "fas fa-user-tie",
-        "ecommerce.Order": "fa-solid fa-bag-shopping",
-        "ecommerce.Transaction": "fas fa-money-bill",
-        "contents.Content": "fa-solid fa-video",
-        "contents.Comment": "fa-solid fa-comments",
-        "contents.Message": "fa-solid fa-comments",
-        "contents.Reaction": "fa-solid fa-heart",
-        "contents.Subscription": "fa-solid fa-rss",
-        "contents.Topic": "fa-solid fa-hashtag",
-        "fan.Campaign": "fas fa-bullhorn",
-        "tv.TvContent": "fa-solid fa-video",
+        "telesales.Product": "fa-solid fa-store",
+        "telesales.SalesOrder": "fa-solid fa-bag-shopping",
     },
     # Icons that are used when one is not manually specified
     "default_icon_parents": "fas fa-chevron-circle-right",
@@ -290,9 +277,7 @@ JAZZMIN_SETTINGS = {
     # UI Tweaks #
     #############
     # Relative paths to custom CSS/JS scripts (must be present in static files)
-    # "custom_css": None,
-    "custom_css": "css/custom.css",
-    "custom_js": "js/custom.js",
+    "custom_css": None,
     # Whether to link font from fonts.googleapis.com (use custom_css to supply font otherwise)
     "use_google_fonts_cdn": True,
     # Whether to show the UI customizer on the sidebar
@@ -312,45 +297,39 @@ JAZZMIN_SETTINGS = {
         "core.customuser": "collapsible",
         "auth.group": "vertical_tabs",
     },
-    # Add a language dropdown into the admin
-    "language_chooser": True,
 }
 
-JAZZMIN_UI_TWEAKS_STRING = ui_env("JAZZMIN_UI_TWEAKS", default=None)
-try:
-    JAZZMIN_UI_TWEAKS = json.loads(JAZZMIN_UI_TWEAKS_STRING)
-except Exception:
-    JAZZMIN_UI_TWEAKS = {
-        "navbar_small_text": False,
-        "footer_small_text": False,
-        "body_small_text": True,
-        "brand_small_text": False,
-        "brand_colour": "navbar-success",
-        "accent": "accent-success",
-        "navbar": "navbar-success navbar-dark",
-        "no_navbar_border": False,
-        "navbar_fixed": True,
-        "layout_boxed": False,
-        "footer_fixed": True,
-        "sidebar_fixed": True,
-        "sidebar": "sidebar-light-success",
-        "sidebar_nav_small_text": False,
-        "sidebar_disable_expand": False,
-        "sidebar_nav_child_indent": False,
-        "sidebar_nav_compact_style": False,
-        "sidebar_nav_legacy_style": False,
-        "sidebar_nav_flat_style": False,
-        "theme": "united",
-        "dark_mode_theme": None,
-        "button_classes": {
-            "primary": "btn-outline-danger",
-            "secondary": "btn-outline-secondary",
-            "info": "btn-outline-info",
-            "warning": "btn-outline-warning",
-            "danger": "btn-outline-danger",
-            "success": "btn-outline-danger",
-        },
-    }
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": True,
+    "brand_small_text": False,
+    "brand_colour": "navbar-success",
+    "accent": "accent-success",
+    "navbar": "navbar-success navbar-dark",
+    "no_navbar_border": False,
+    "navbar_fixed": True,
+    "layout_boxed": False,
+    "footer_fixed": True,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-light-success",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": False,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "united",
+    "dark_mode_theme": None,
+    "button_classes": {
+        "primary": "btn-outline-danger",
+        "secondary": "btn-outline-secondary",
+        "info": "btn-outline-info",
+        "warning": "btn-outline-warning",
+        "danger": "btn-outline-danger",
+        "success": "btn-outline-danger",
+    },
+}
 
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

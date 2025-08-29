@@ -1,7 +1,7 @@
 # Vue
 node_modules/
 dist/
-.env
+.env.gcp
 
 # Python
 __pycache__/

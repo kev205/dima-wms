@@ -64,26 +64,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Revenue -->
-      <div class="card p-6 hover-lift">
-        <div class="flex items-center justify-between">
-          <div class="flex-1">
-            <p class="text-sm font-medium text-gray-600 mb-1">Revenue</p>
-            <p class="text-3xl font-bold text-gray-900">${{ formatNumber(stats.totalRevenue) }}</p>
-            <div class="flex items-center mt-2">
-              <svg class="w-4 h-4 text-green-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-              </svg>
-              <span class="text-sm text-green-600 font-medium">+15.2%</span>
-              <span class="text-sm text-gray-500 ml-1">from last month</span>
-            </div>
-          </div>
-          <div class="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center">
-            <CurrencyDollarIcon class="h-6 w-6 text-white" />
-          </div>
-        </div>
-      </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
