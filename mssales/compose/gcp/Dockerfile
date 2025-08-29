@@ -19,11 +19,11 @@ COPY --from=builder /root/.local /root/.local
 
 COPY --from=builder /app /app
 
-COPY ./compose/qa/entrypoint.sh /entrypoint.sh
+COPY ./compose/gcp/entrypoint.sh /entrypoint.sh
 RUN sed -i 's/\r$//g' /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-COPY ./compose/qa/start.sh /start.sh
+COPY ./compose/gcp/start.sh /start.sh
 RUN sed -i 's/\r$//g' /start.sh
 RUN chmod +x /start.sh
 
